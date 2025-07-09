@@ -1,0 +1,15 @@
+[project]
+name = "chess-ai-agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "firecrawl-py>=2.15.0",
+    "langchain>=0.3.26",
+    "langchain-openai>=0.3.27",
+    "langgraph>=0.5.1",
+    "pydantic>=2.11.7",
+    "pymupdf>=1.26.3",
+    "python-dotenv>=1.1.1",
+]

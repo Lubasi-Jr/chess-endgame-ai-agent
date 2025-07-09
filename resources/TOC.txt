@@ -1,0 +1,124 @@
+
+--- Page 6 (TOC) ---
+Introduction ---> Page 9
+1. Basic endings ---> Page 28
+Ending 1     The rule of the square ---> Page 28
+Ending 2     The pawn is on the 6th rank ---> Page 30
+Ending 3     Key squares ---> Page 33
+Ending 4     The rook’s pawn. Defending king in front of the pawn ---> Page 37
+Ending 5     Imprisoning the stronger side’s king ---> Page 38
+Ending 6     Rook vs. Bishop. The wrong corner ---> Page 39
+Ending 7     Rook vs. Bishop. The right corner ---> Page 40
+Ending 8     Rook vs. Knight. At the edge of the board ---> Page 41
+Ending 9     Rook vs. Knight. In the corner ---> Page 42
+2. Basic Test ---> Page 46
+3. Knight vs. Pawn ---> Page 149
+Ending 10    Knight vs. 7th-rank pawn ---> Page 149
+Ending 11    The knight’s pawn ---> Page 150
+Ending 12    The 6th-rank rook’s pawn ---> Page 151
+Ending 13    The 7th-rank rook’s pawn ---> Page 152
+Ending 14    King + Knight checkmate ---> Page 155
+Ending 15    The knight’s dumb square ---> Page 155
+4. Queen vs. Pawn ---> Page 157
+Ending 16    Queen vs. 7th-rank pawn ---> Page 157
+Ending 17    Queen vs. 7th-rank rook’s pawn ---> Page 158
+Ending 18    Queen vs. 7th-rank bishop’s pawn ---> Page 160
+Ending 19    A too-frequent trick ---> Page 163
+Ending 20    Queen vs. Queen ---> Page 164
+5. Rook vs. Pawn ---> Page 166
+Ending 21    Kings do not push. Just counting ---> Page 166
+Ending 22    Defending king on the 3rd rank cut off along a rank ---> Page 167
+Ending 23    Strong king behind the pawn ---> Page 169
+Ending 24    Stronger side’s king on one side ---> Page 172
+Ending 25    The rook in front of the pawn ---> Page 175
+Ending 26    Special themes with a knight’s pawn ---> Page 176
+Ending 27    The rook’s pawn. Pushing from the rear ---> Page 177
+Ending 28    The rook’s pawn. Lateral push ---> Page 178
+Ending 29    The pawn wins against the rook ---> Page 180
+6. Rook vs. 2 Pawns ---> Page 182
+Ending 30    Kings play no part ---> Page 182
+Ending 31    Both kings play a part ---> Page 183
+Ending 32    Only the defending king plays a part ---> Page 185
+7. Same-coloured bishops: Bishop + Pawn vs. Bishop ---> Page 189
+
+--- Page 7 (TOC) ---
+Ending 33    Driving off the defending bishop ---> Page 189
+Ending 34    In the rear of the pawn ---> Page 190
+Ending 35    The short diagonals ---> Page 191
+Ending 36    Frontal defence ---> Page 192
+8. Bishop vs. Knight: one pawn on the board ---> Page 195
+Ending 37    Central pawn ---> Page 195
+Ending 38    The rook’s pawn ---> Page 197
+Ending 39    The pawn is on the 7th rank ---> Page 200
+Ending 40    Unstable position of the controlling knight ---> Page 201
+9. Opposite-coloured bishops: Bishop + 2 pawns vs. Bishop ---> Page 203
+Ending 41    Pawns on the 6th rank ---> Page 203
+Ending 42    Pawns on 5th rank or behind ---> Page 205
+Ending 43    A very special pair of pawns. The cage ---> Page 207
+Ending 44    Pawns separated by just one file ---> Page 209
+Ending 45    Controlling both pawns along the same diagonal ---> Page 209
+Ending 46    The winning procedure ---> Page 210
+Ending 47    Knight’s and central pawn ---> Page 211
+Ending 48    Central and rook’s pawns ---> Page 214
+Ending 49    Bishop’s and knight’s pawns ---> Page 215
+Ending 50    The attacking bishop controls the promotion square of the knight’s pawn ---> Page 216
+Ending 51    Central and rook’s pawns ---> Page 218
+10. Rook + Pawn vs. Rook ---> Page 220
+Ending 52    The Philidor Position ---> Page 220
+Ending 53    Lucena Position. The bridge ---> Page 222
+Ending 54    The long side ---> Page 223
+Ending 55    The knight’s pawn. First-rank defence ---> Page 224
+Ending 56    Central or bishop pawns. Kling and Horwitz (K&H) defensive technique ---> Page 225
+Ending 57    Central 6th-rank pawn. Rook with distant effectiveness ---> Page 228
+Ending 58    Central 6th-rank pawn. Rook without distant effectiveness ---> Page 229
+Ending 59    Cutting off along one file ---> Page 232
+Ending 60    Defending king cut off by two files. Grigoriev’s combined method ---> Page 233
+Ending 61    King cut off along two files vs. long side. Mating themes ---> Page 234
+Ending 62    Perfect Cut along a rank ---> Page 236
+Ending 63    Imperfect Cut along a rank ---> Page 238
+Ending 64    Apparent Cut along a rank ---> Page 238
+Ending 65    Pawn on the 7th rank. Attacking rook in front of the pawn ---> Page 240
+Ending 66    Pawn on the 6th rank. The Vancura Defence ---> Page 240
+Ending 67    The king is in front of the pawn and the pawn is on the 7th rank ---> Page 243
+Ending 68    The rook and the king support the pawn ---> Page 245
+11. Rook + two Pawns vs. Rook ---> Page 246
+Ending 69    Central pawns ---> Page 246
+Ending 70    Knight’s pawns ---> Page 247
+Ending 71    Defending king cut off on the back rank ---> Page 249
+Ending 72    Bishop’s pawn on 5th rank ---> Page 250
+Ending 73    The defensive procedure ---> Page 254
+Ending 74    Blocked connected pawns ---> Page 258
+Ending 75    Attacking rook stuck in front of the 7th-rank pawn ---> Page 260
+
+--- Page 8 (TOC) ---
+Ending 76    Vancura Defence against 2 pawns ---> Page 261
+12. Pawn endings ---> Page 262
+Ending 77    Doubled pawns ---> Page 262
+Ending 78    Isolated pawns ---> Page 263
+Ending 79    Blocked pawns. Key squares ---> Page 264
+Ending 80    Less advanced (or rook’s) blocked pawns ---> Page 266
+Ending 81    Pawns on adjacent files ---> Page 269
+Ending 82    Passed pawns. Dual-purpose king manoeuvres ---> Page 270
+Ending 83    Rook’s pawns and one distant passed pawn ---> Page 273
+Ending 84    The passed pawn is central and near ---> Page 276
+Ending 85    A passed Bishop’s pawn on the same wing ---> Page 279
+Ending 86    The defending side has moved his pawn. Triangulation ---> Page 279
+Ending 87    Knight’s and rook’s pawn against rook’s pawn ---> Page 281
+Ending 88    King against 2 passed pawns ---> Page 287
+Ending 89    Protected passed pawns ---> Page 289
+Ending 90    Distant passed pawns ---> Page 290
+Ending 91    Doubled pawns ---> Page 291
+Ending 92    Breakthroughs when the king is far ---> Page 292
+13. Other material relations ---> Page 294
+Ending 93    Checkmating with Bishop and Knight ---> Page 294
+Ending 94    The king is on the edge ---> Page 299
+Ending 95    The king is far from the edge. Cochrane Defence ---> Page 302
+Ending 96    Second-rank defence ---> Page 305
+Ending 97    Rook + 6th-rank bishop’s pawn ---> Page 308
+Ending 98    Rook + rook’s pawn vs. Bishop ---> Page 309
+Ending 99    Queen vs. Rook + Pawn ---> Page 312
+Ending 100  Queen vs. Rook + Rook’s Pawn ---> Page 314
+14. Final Test ---> Page 317
+15. Appendix ---> Page 480
+Bibliography ---> Page 489
+Index of Players ---> Page 491
