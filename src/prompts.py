@@ -1,4 +1,29 @@
-class DeveloperToolsPrompts:
+from langchain_core.messages import SystemMessage, HumanMessage
+
+class LessonGeneratorPrompts:
+    """Prompts for explaining chess endgames using book content and diagrams"""
+
+    SYSTEM_MESSAGE = SystemMessage(
+        content=(
+            "You are a chess tutor. Given images and text from a chess endgame book, "
+            "explain the board positions, give insights, and convert them into PGN if possible."
+        )
+    )
+
+    @staticmethod
+    def get_lesson_gen_prompt(topic: str, text_content: str, image_blocks: list) -> HumanMessage:
+        return HumanMessage(content=[
+            {"type": "text", "text": f"Please analyze the following chess endgame material related to: {topic}. "
+                                     "Explain the positions based on the diagrams and text, provide PGN if possible, "
+                                     "and summarize the key principles or strategies."},
+            {"type": "text", "text": text_content},
+            *image_blocks
+        ])
+
+class RuleDefinePrompts:
+    peak ='PEAK STILL'
+
+class TableOfContentsPrompts:
     """Collection of prompts for analyzing developer tools and technologies"""
 
     
@@ -42,6 +67,47 @@ Your final output must follow this format:
                 how to play rook and bishop endgames
                 """
     
+
+
+class EndgameRulesPrompts:
+    """Prompts for generating instructional rules from scraped chess endgame content."""
+
+    # System prompt for the assistant
+    RULE_GENERATOR_SYSTEM = """
+    You are a professional chess coach and writer.
+
+    Your job is to read long-form instructional content about a specific chess endgame and extract 5 to 10 clear, actionable rules or principles that a student should follow when playing that endgame.
+
+    Each rule must be:
+    - Numbered (1., 2., etc.)
+    - Written in a concise, imperative style (e.g., "Bring your king to the center early")
+    - Based only on the information in the content provided
+
+    Do not add introductions, explanations, or summaries. Output only the numbered rules.
+
+    Example format:
+
+    1. Always aim to bring your king toward the center early.  
+    2. Use opposition to restrict the enemy king's movement.  
+    3. Do not push the pawn until your king is in front of it.  
+    4. Understand and apply the "square rule" to judge pawn promotion potential.  
+    5. Use shouldering techniques to block the opposing king.  
+    6. In critical positions, calculate whether promotion can be forced before pushing.  
+    7. Avoid stalemating positions near the promotion square.  
+    8. Keep your king in front of the pawn when advancing.  
+    9. Force the enemy king to the edge before pushing the pawn.  
+    10. Know basic winning and drawing techniques in king and pawn vs king endgames.
+    """
+
     @staticmethod
-    def next_function():
-        pass
+    def rule_generator_user(search_query: str, scraped_content: str) -> str:
+        return f"""
+        Based on the Students request, the search query used was: **{search_query}**
+
+        Based on the instructional material below, extract 5 to 10 clear rules or principles that they can follow to play the particular endgame well.
+
+        Only output the rules — no headings, commentary, or explanations.
+
+        Scraped Content:
+        {scraped_content}
+                """

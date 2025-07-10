@@ -6,9 +6,7 @@ from pydantic import BaseModel
 class EndgameState(BaseModel):
     """State that will be used in the graph by Langgraph"""
     topic: str
-    general_query: str 
     piece_query: str
-    endgame_rules: str
     piece_rules: str
     book_text_content: str
     book_pages: List[Any]
