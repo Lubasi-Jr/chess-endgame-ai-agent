@@ -47,7 +47,13 @@ class BookUtilities:
             img_bytes = pix.tobytes('png')
             img_base64 = base64.b64encode(img_bytes).decode("utf-8")
             img_url = f"data:image/png;base64,{img_base64}"
-            image_blocks.append({"type": "image_url", "image_url": img_url})
+            image_blocks.append({
+                "type": "image_url",
+                "image_url": {
+                "url": img_url
+                }
+            })
+
         book = BookExtract(all_text,image_blocks)
         return book
 
