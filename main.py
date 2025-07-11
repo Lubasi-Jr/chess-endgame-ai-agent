@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
-from src.endgame import BookUtilities
+from src.book import BookUtilities
 from src.prompt_testing import TableOfContentsPrompts, EndgameRulesPrompts
 from src.models import EndgameState
 import json
