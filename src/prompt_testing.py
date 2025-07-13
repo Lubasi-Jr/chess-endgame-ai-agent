@@ -11,12 +11,93 @@ class LessonGeneratorPrompts:
     )
 
     @staticmethod
-    def get_lesson_gen_prompt(topic: str, text_content: str, image_blocks: list) -> HumanMessage:
+    def get_system_lesson_gen_prompt(topic: str) -> SystemMessage:
+        SYSTEM_MESSAGE = SystemMessage(content=f"""You are a chess grandmaster creating detailed endgame lessons for an intermediate player. 
+            The student prefers thorough explanations in simple English with carefully limited chess notation.
+
+            Your task is to create comprehensive lessons based on:
+            1. The endgame topic: {topic}
+            2. Key principles obtained from scraping the web on that topic:
+            3. Relevant content from '100 Endgames book by Jesus De La Villa'
+
+            IMPORTANT INSTRUCTIONS:
+            - Create multiple complete lessons (typically 3-5)
+            - Each lesson must follow EXACTLY this 7-field structure:
+            * Title: Numbered lesson with specific scenario
+            * Situation: Detailed plain English description
+            * FEN: Exact position in FEN notation
+            * Goal: Clear objectives for both sides
+            * Strategy: Comprehensive winning plan
+            * Moves: Step-by-step guidance ending with notation
+            * Rules Link: All relevant principle connections
+
+            EXAMPLE FORMAT:
+            Title: "Lesson 1: King and Pawn vs. King - Shouldering Technique"
+            Situation: "Your white king stands on e4 with a pawn on e5. The black king approaches from the side on f7. You need to prevent the black king from reaching the pawn's queening square while advancing your own king to create space."
+            FEN: "8/5k2/8/4P3/4K3/8/8/8 w - - 0 1"
+            Goal: "Promote the pawn while preventing the black king from blocking its path. Black aims to reach e8 or g8 to stop the pawn."
+            Strategy: "Use the 'shouldering' technique where your king moves diagonally to cut off the enemy king. First prevent the black king from approaching directly, then advance your pawn when the path is clear. The key is maintaining the opposition while making progress."
+            Moves: "First move your king to f5 to block the black king's direct path. If they respond with Kf8, advance to e6 controlling key squares. The most accurate move order would be: 1. Kf5 Kf8 2. Ke6 Ke8 3. e6 Kd8 4. Kf7"
+            Rules Link: "This demonstrates Principle 2 (King activity) as your king actively cuts off the opponent. It also shows Principle 5 (Opposition) in the final moves, and Principle 7 (Pawn advancement timing) regarding when to push the pawn."
+            """)
+        return SYSTEM_MESSAGE
+
+    @staticmethod
+    def get_user_lesson_gen_prompt(topic: str, principles: str, text_content_from_book: str, image_blocks: list) -> HumanMessage:
+        USER_PROMPT = f"""Create thorough endgame lessons about {topic} using these principles:
+            {principles}
+
+            Book content to use:
+            {text_content_from_book}
+
+            The actual pages of this book have been uploaded as images as part of this prompt so do have a look in order to gain a complete understanding
+
+            Required Output Format:
+            - List of ChessLesson objects (3-5 complete lessons. The number of lessons depend on how many lessons are described in the book). Keep note that the ChessLesson class is as follows:
+
+            class ChessLesson(BaseModel):
+            #Structured output for LLM company analysis focused on developer tools
+                title: str
+                situation: str
+                FEN: str
+                goal: str
+                strategy: str
+                moves: str
+                rules_link: str
+
+            - All fields must contain detailed paragraphs (3-4 sentences)
+            -'moves' field must include:
+            * English description of key moves
+            * Final line with precise notation
+            - FEN must exactly match described positions
+
+            Critical Guidelines:
+            1. Length & Detail:
+            - NO 1-sentence answers anywhere
+            - Situation: 3-4 sentences describing the position
+            - Strategy: 4-5 sentences explaining the plan
+            - Moves: 3 sentences + notation line
+            - Rules Link: Must mention ALL relevant principles
+
+            2. Notation Rules:
+            - Only in FEN and final moves line
+            - Precede notation with: "The most accurate move order would be:"
+            - Use simple algebraic (e.g., "Nf3" not "Ng1-f3")
+
+            3. Principle Linking:
+            - If multiple principles apply, mention ALL of them
+            - Explain how each principle applies to the position
+            - Never say "this demonstrates Principle X" without explanation
+
+            Remember:
+            1. The student wants to deeply understand these positions
+            2. Every explanation should be worth reading - no fluff
+            3. Connect concepts to practical play
+            4. Use chess terms only when absolutely necessary
+            5. Imagine you're explaining to someone who knows basics but gets overwhelmed by dense chess literature
+            """ 
         return HumanMessage(content=[
-            {"type": "text", "text": f"Please analyze the following chess endgame material related to: {topic}. "
-                                     "Explain the positions based on the diagrams and text, provide PGN if possible, "
-                                     "and summarize the key principles or strategies."},
-            {"type": "text", "text": text_content},
+            {"type": "text", "text": USER_PROMPT},
             *image_blocks
         ])
 
@@ -111,3 +192,36 @@ class EndgameRulesPrompts:
         Scraped Content:
         {scraped_content}
                 """
+    
+
+    # Lesson generator
+    SYSTEM_PROMPT = """You are a chess grandmaster creating detailed endgame lessons for an intermediate player. 
+The student prefers thorough explanations in simple English with carefully limited chess notation.
+
+Your task is to create comprehensive lessons based on:
+1. The endgame topic: {topic}
+2. Key principles: {principles}
+3. Relevant content from '100 Endgames': {text_content_from_book}
+
+IMPORTANT INSTRUCTIONS:
+- Create multiple complete lessons (typically 3-5)
+- Each lesson must follow EXACTLY this 7-field structure:
+  * Title: Numbered lesson with specific scenario
+  * Situation: Detailed plain English description
+  * FEN: Exact position in FEN notation
+  * Goal: Clear objectives for both sides
+  * Strategy: Comprehensive winning plan
+  * Moves: Step-by-step guidance ending with notation
+  * Rules Link: All relevant principle connections
+
+EXAMPLE FORMAT:
+Title: "Lesson 1: King and Pawn vs. King - Shouldering Technique"
+Situation: "Your white king stands on e4 with a pawn on e5. The black king approaches from the side on f7. You need to prevent the black king from reaching the pawn's queening square while advancing your own king to create space."
+FEN: "8/5k2/8/4P3/4K3/8/8/8 w - - 0 1"
+Goal: "Promote the pawn while preventing the black king from blocking its path. Black aims to reach e8 or g8 to stop the pawn."
+Strategy: "Use the 'shouldering' technique where your king moves diagonally to cut off the enemy king. First prevent the black king from approaching directly, then advance your pawn when the path is clear. The key is maintaining the opposition while making progress."
+Moves: "First move your king to f5 to block the black king's direct path. If they respond with Kf8, advance to e6 controlling key squares. The most accurate move order would be: 1. Kf5 Kf8 2. Ke6 Ke8 3. e6 Kd8 4. Kf7"
+Rules Link: "This demonstrates Principle 2 (King activity) as your king actively cuts off the opponent. It also shows Principle 5 (Opposition) in the final moves, and Principle 7 (Pawn advancement timing) regarding when to push the pawn."
+"""
+
+

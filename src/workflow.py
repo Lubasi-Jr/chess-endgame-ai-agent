@@ -65,12 +65,12 @@ class Workflow:
             messages = [SystemMessage(content=self.prompt.RULE_GENERATOR_SYSTEM), HumanMessage(content=self.prompt.rule_generator_user(state.piece_query, web_content))]
             print('📜Using the LLM to generate specific rules and principles from the scraped content')
             result = self.llm.invoke(messages)
-            principles = result.content.strip().splitlines()
+            principles = result.content.strip()
             return {"piece_rules": principles}
 
         except Exception as e:
             print(e)
-            return {'piece_rules': ['1. No rules generated, an error occurred','2. I repeat, no rules generated. Come up with your own shame']} 
+            return {'piece_rules': '1. No rules generated, an error occurred\n2. I repeat, no rules generated. Come up with your own shame'} 
         
     # Step 3
     def _lesson_generation(self, state: EndgameState) -> Dict[str, Any]:
