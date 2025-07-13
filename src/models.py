@@ -7,9 +7,9 @@ class EndgameState(BaseModel):
     """State that will be used in the graph by Langgraph"""
     topic: str
     piece_query: str
-    piece_rules: str
+    piece_rules: List[str]
     book_text_content: str
     book_pages: List[Any]
-    Lessons: Any
+    #Lessons: Any
 
 
