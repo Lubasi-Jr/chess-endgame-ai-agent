@@ -120,7 +120,7 @@ class Workflow:
         for lesson_number, lesson_name in enumerate(lesson_titles):
             day_and_slot = get_lesson_day_and_slot(lesson_number+1)
             event_handler(day_and_slot,lesson_name)
-        pass
+        
 
 
         
