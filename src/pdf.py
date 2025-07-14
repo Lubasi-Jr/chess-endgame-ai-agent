@@ -32,4 +32,4 @@ def save_text_as_pdf(text: str, filename: str, margin_horizontal: int = 10, marg
     output_file_path = os.path.join(lessons_path, f"{filename}.pdf")
     pdf.output(output_file_path)
 
-    print(f"PDF saved as {filename}.pdf")
+    print(f"💾 PDF saved as {filename}.pdf")

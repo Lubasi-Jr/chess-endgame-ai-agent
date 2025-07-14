@@ -20,6 +20,7 @@ class Workflow:
         self.prompt = Prompts()
         self.book = BookUtilities()
 
+    # Workflow
     # Step 1
     def _read_book_step(self, state: EndgameState) -> Dict[str,Any]:
         
@@ -34,7 +35,7 @@ class Workflow:
             end_page = output[1]
             search_query = output[2]
             # Now that pages are found, extract the book
-            print(f'💡Pages found are {start_page} and {end_page}. Currently extracting information from the book')
+            print(f'💡 Pages found are {start_page} and {end_page}. Extracting information from the book', end='\n\n')
             book_extract = self.book.get_book_extract(start_page,end_page)
             content = book_extract.text_content
             pages = book_extract.image_blocks
@@ -46,7 +47,7 @@ class Workflow:
     # Helper function to scrape the web
     def _web_scraper(self, query: str) -> str:
         try:
-            print(f'🔎Searching the web to find specific Endgame principles. Query used is {query}')
+            print(f'🔎 Searching the web to find specific Endgame principles. Query used is {query}', end='\n\n')
             search_results = self.firecrawl.search_for_rules(query,4)
             all_content = ''
             for data in search_results.data:
@@ -66,7 +67,7 @@ class Workflow:
         # Web has been scraped, use the LLM to generate principles
         try:
             messages = [SystemMessage(content=self.prompt.RULE_GENERATOR_SYSTEM), HumanMessage(content=self.prompt.rule_generator_user(state.piece_query, web_content))]
-            print('📜Using the LLM to generate specific rules and principles from the scraped content')
+            print('📜 Using the LLM to generate specific rules and principles from the scraped content', end='\n\n')
             result = self.llm.invoke(messages)
             principles = result.content.strip()
             return {"piece_rules": principles}
@@ -82,7 +83,7 @@ class Workflow:
         try:
             messages = [systemMessage,humanMessage]
             structured_llm = self.llm.with_structured_output(ChessLesson)
-            print('🖊️ Generating Lessons')
+            print('🖊️ Creating Lessons for you...', end='\n\n')
             response = structured_llm.invoke(messages)
             hashmap = {key: value for key,value in response}
             return {'lessons': hashmap}
@@ -115,7 +116,7 @@ class Workflow:
     # Step 5
     def _calender_events_step(self, state: EndgameState):
         lesson_titles = state.lessons['title']
-        print('Creating Google Calender events to schedule your lessons...')
+        print('🗓️ Creating Google Calender events to schedule your lessons...')
         
         for lesson_number, lesson_name in enumerate(lesson_titles):
             day_and_slot = get_lesson_day_and_slot(lesson_number+1)

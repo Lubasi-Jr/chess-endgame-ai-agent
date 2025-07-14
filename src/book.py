@@ -30,7 +30,7 @@ class BookUtilities:
     def get_table_of_contents() -> str:
         with open(toc_path,'r', encoding='utf-8') as f:
             toc = f.read()
-        print('📜Retrieving the table of contents...')
+        print('📜 Retrieving the table of contents...', end='\n\n')
         return toc
     @staticmethod
     def get_book_extract(start_page: int ,end_page: int) -> BookExtract:
