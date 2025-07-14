@@ -57,13 +57,14 @@ class LessonGeneratorPrompts:
 
             class ChessLesson(BaseModel):
             #Structured output for LLM company analysis focused on developer tools
-                title: str
-                situation: str
-                FEN: str
-                goal: str
-                strategy: str
-                moves: str
-                rules_link: str
+                title: List[str]
+                situation: List[str]
+                FEN: List[str]
+                goal: List[str]
+                strategy: List[str]
+                moves: List[str]
+                rules_link: List[str]
+            Since you are using this as a structured output I would like that each element of the lesson would be placed in the appropriate index of the array attribute. For example, title[0] should conatin the title for lesson 1 and title[1] should contain the title for lesson 2 and so on and so forth for all the other lessons
 
             - All fields must contain detailed paragraphs (3-4 sentences)
             -'moves' field must include:
