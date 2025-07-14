@@ -7,6 +7,9 @@ from .prompts import Prompts
 from .firecrawl import FirecrawlService
 from .models import EndgameState, ChessLesson
 from typing import List, Optional, Dict, Any
+import re
+from .calender import get_lesson_day_and_slot, event_handler
+from .pdf import save_text_as_pdf
 
 load_dotenv()
 
@@ -88,7 +91,6 @@ class Workflow:
             return {'lessons': {}}
         
     
-    # Helper function for step 4
     # Step 4
     def _pdf_generation_step(self, state: EndgameState):
         if not state.lessons:
@@ -107,6 +109,20 @@ class Workflow:
             rules_link = endgame_lessons['rules_link'][i]
 
             lesson_text = f'{underlined_title}\n\nPRINCIPLES\n{principles}\n\nSITUATION\n{situation}\n\nFEN: {FEN}\n\nGOAL\n{goal}\n\nSTRATEGY\n{strategy}\n\nMOVES\n{moves}\n\nHOW IT LINKS TO THE RULES\n{rules_link}'
+            # Create a safe filename for the pdf
+            filename = re.sub(r'\s+', '_', title.strip())
+            save_text_as_pdf(lesson_text,filename)
+    # Step 5
+    def _calender_events_step(self, state: EndgameState):
+        lesson_titles = state.lessons['title']
+        print('Creating Google Calender events to schedule your lessons')
+        print('Your learning schedule is as follows')
+        for lesson_number, lesson_name in enumerate(lesson_titles):
+            day_and_slot = get_lesson_day_and_slot(lesson_number+1)
+            print(lesson_name, end=' ')
+            event_handler(day_and_slot,lesson_name)
+        pass
+
 
         
             

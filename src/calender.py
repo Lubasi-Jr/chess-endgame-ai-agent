@@ -25,12 +25,14 @@ def get_lesson_day_and_slot(lesson_number: int ) -> List[int]:
     lesson_slot = lesson_number % 3
     return [lesson_day,lesson_slot]
 
-def event_handler(event_times: List[int]):
+def event_handler(event_times: List[int], event_name: str = 'Chess Endgame event'):
     timeslot = {1: '4:00 PM', 2: '4:30 PM', 0: '5:00 PM'}
     day, slot = event_times
     event_date = add_days_to_today(day-1)
+    event_time = timeslot[slot]
     print(f'Date: {event_date}',end=' ')
-    print(f'Time: {timeslot[slot]}')
+    print(f'Time: {event_time}')
+    # Logic for creating event
 
 def add_days_to_today(days: int) -> str:
     future_date = datetime.today() + timedelta(days=days)
