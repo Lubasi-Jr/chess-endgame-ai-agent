@@ -27,7 +27,7 @@ class Workflow:
             # Firstly, determine what pages are required
             table_of_contents = self.book.get_table_of_contents()
             messages = [SystemMessage(content= self.prompt.PAGE_LOCATOR_SYSTEM), HumanMessage(content= self.prompt.page_locator_user(state.topic,table_of_contents))]
-            print('📖♟️Finding what pages in the "100 Endgames you should know" book by "Jesus De La Villa" are needed to give you these lessons')
+            print('📖 ♟️ Finding what pages in the "100 Endgames you should know" book by "Jesus De La Villa" are needed to give you these lessons', end='\n\n')
             response = self.llm.invoke(messages)
             output = response.content.strip().splitlines()
             start_page = output[0]

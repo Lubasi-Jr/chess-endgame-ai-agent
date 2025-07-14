@@ -7,7 +7,7 @@ from googleapiclient.discovery import build
 import os.path
 
 
-
+# Mock lessons for testing purposes
 lessons = [
     "Lesson 1",
     "Lesson 2",
@@ -71,14 +71,15 @@ def event_handler(event_times: List[int], event_name: str = 'Chess Endgame event
     created_event = service.events().insert(calendarId='primary', body=event).execute()
     print(f"✅ Created event: {created_event.get('summary')} at {start_datetime.strftime('%Y-%m-%d %H:%M')}")
 
-def add_days_to_today(days: int) -> str:
+""" def add_days_to_today(days: int) -> str:
     future_date = datetime.today() + timedelta(days=days)
-    return future_date.strftime("%d/%m/%Y")
+    return future_date.strftime("%d/%m/%Y") """
     
 
-def main():
+# Main function for testing purposes
+""" def main():
     for lesson_number,name in enumerate(lessons):
         day_and_slot = get_lesson_day_and_slot(lesson_number+1)
         event_handler(day_and_slot,name)
 
-main()
+main() """
