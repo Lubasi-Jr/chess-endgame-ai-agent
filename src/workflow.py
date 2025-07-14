@@ -19,8 +19,24 @@ class Workflow:
         self.firecrawl = FirecrawlService()
         self.prompt = Prompts()
         self.book = BookUtilities()
+        self.workflow = self._build_workflow()
 
     # Workflow
+    def _build_workflow(self):
+        graph = StateGraph(EndgameState)
+        graph.add_node('read', self._read_book_step)
+        graph.add_node('rules', self._generate_rules_step)
+        graph.add_node('lesson',self._lesson_generation_step)
+        graph.add_node('pdf',self._pdf_generation_step)
+        graph.add_node('calender', self._calender_events_step)
+        graph.set_entry_point('read')
+        graph.add_edge('read','rules')
+        graph.add_edge('rules','lesson')
+        graph.add_edge('lesson','pdf')
+        graph.add_edge('pdf','calender')
+        graph.add_edge('calender',END)
+        return graph.compile()
+    
     # Step 1
     def _read_book_step(self, state: EndgameState) -> Dict[str,Any]:
         
@@ -121,6 +137,15 @@ class Workflow:
         for lesson_number, lesson_name in enumerate(lesson_titles):
             day_and_slot = get_lesson_day_and_slot(lesson_number+1)
             event_handler(day_and_slot,lesson_name)
+
+    # Run workflow 
+    def run(self, topic: str) -> EndgameState:
+        initial_state = EndgameState(topic=topic)
+        final_state = self.workflow.invoke(initial_state)
+        return EndgameState(**final_state)
+
+
+
         
 
 
