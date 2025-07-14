@@ -128,8 +128,12 @@ class Workflow:
             lesson_text = f'{underlined_title}\n\nPRINCIPLES\n{principles}\n\nSITUATION\n{situation}\n\nFEN: {FEN}\n\nGOAL\n{goal}\n\nSTRATEGY\n{strategy}\n\nMOVES\n{moves}\n\nHOW IT LINKS TO THE RULES\n{rules_link}'
             # Create a safe filename for the pdf
             filename = re.sub(r'\s+', '_', title.strip())
-            #save_text_as_txt(lesson_text,filename)
-            print(lesson_text)
+            filename += '.txt' 
+            with open(filename, 'w', encoding='utf-8') as file:
+                file.write(lesson_text)
+            print(f"💾 Lesson file saved as {filename}")
+            #save_text_as_pdf(lesson_text,filename)
+            #print(lesson_text)
     # Step 5
     def _calender_events_step(self, state: EndgameState):
         lesson_titles = state.lessons['title']
