@@ -9,7 +9,7 @@ from .models import EndgameState, ChessLesson
 from typing import List, Optional, Dict, Any
 import re
 from .calender import get_lesson_day_and_slot, event_handler
-from .pdf import save_text_as_pdf
+from .pdf import save_text_as_pdf, save_text_as_txt
 
 load_dotenv()
 
@@ -51,8 +51,8 @@ class Workflow:
             end_page = output[1]
             search_query = output[2]
             # Now that pages are found, extract the book
-            print(f'💡 Pages found are {start_page} and {end_page}. Extracting information from the book', end='\n\n')
-            book_extract = self.book.get_book_extract(start_page,end_page)
+            # print(f'💡 Pages found are {str(start_page)} and {end_page}. Extracting information from the book', end='\n\n')
+            book_extract = self.book.get_book_extract(int(start_page),int(end_page))
             content = book_extract.text_content
             pages = book_extract.image_blocks
             return {"piece_query": search_query, "book_text_content": content, "book_pages": pages}
@@ -63,7 +63,7 @@ class Workflow:
     # Helper function to scrape the web
     def _web_scraper(self, query: str) -> str:
         try:
-            print(f'🔎 Searching the web to find specific Endgame principles. Query used is {query}', end='\n\n')
+            print(f'🔎 Searching the web to find specific Endgame principles. Query used is "{query}"', end='\n\n')
             search_results = self.firecrawl.search_for_rules(query,4)
             all_content = ''
             for data in search_results.data:
@@ -128,11 +128,13 @@ class Workflow:
             lesson_text = f'{underlined_title}\n\nPRINCIPLES\n{principles}\n\nSITUATION\n{situation}\n\nFEN: {FEN}\n\nGOAL\n{goal}\n\nSTRATEGY\n{strategy}\n\nMOVES\n{moves}\n\nHOW IT LINKS TO THE RULES\n{rules_link}'
             # Create a safe filename for the pdf
             filename = re.sub(r'\s+', '_', title.strip())
-            save_text_as_pdf(lesson_text,filename)
+            #save_text_as_txt(lesson_text,filename)
+            print(lesson_text)
     # Step 5
     def _calender_events_step(self, state: EndgameState):
         lesson_titles = state.lessons['title']
-        print('🗓️ Creating Google Calender events to schedule your lessons...')
+        print()
+        print('🗓️  Creating Google Calender events to schedule your lessons...')
         
         for lesson_number, lesson_name in enumerate(lesson_titles):
             day_and_slot = get_lesson_day_and_slot(lesson_number+1)
