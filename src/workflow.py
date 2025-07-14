@@ -115,11 +115,10 @@ class Workflow:
     # Step 5
     def _calender_events_step(self, state: EndgameState):
         lesson_titles = state.lessons['title']
-        print('Creating Google Calender events to schedule your lessons')
-        print('Your learning schedule is as follows')
+        print('Creating Google Calender events to schedule your lessons...')
+        
         for lesson_number, lesson_name in enumerate(lesson_titles):
             day_and_slot = get_lesson_day_and_slot(lesson_number+1)
-            print(lesson_name, end=' ')
             event_handler(day_and_slot,lesson_name)
         pass
 

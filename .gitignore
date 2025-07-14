@@ -11,3 +11,6 @@ credentials.json
 
 # Virtual environments
 .venv
+
+*.json
+token.json

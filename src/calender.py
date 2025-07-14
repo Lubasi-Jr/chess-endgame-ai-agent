@@ -1,7 +1,12 @@
 from typing import List
 from math import ceil
 from datetime import datetime, timedelta
-print('These are all the lessons available: ')
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+import os.path
+
+
 
 lessons = [
     "Lesson 1",
@@ -9,13 +14,28 @@ lessons = [
     "Lesson 3",
     "Lesson 4",
     "Lesson 5",
-    "Lesson 6",
-    "Lesson 7",
-    "Lesson 8",
-    "Lesson 9",
-    "Lesson 10",
-    "Lesson 11"
+   
 ]
+
+SCOPES = ['https://www.googleapis.com/auth/calendar']
+
+def get_calendar_service():
+    creds = None
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh()
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
+
+    service = build('calendar', 'v3', credentials=creds)
+    return service
+
 
 # Goal is to divide the lessons accordingly with date and slot
 def get_lesson_day_and_slot(lesson_number: int ) -> List[int]:
@@ -26,13 +46,30 @@ def get_lesson_day_and_slot(lesson_number: int ) -> List[int]:
     return [lesson_day,lesson_slot]
 
 def event_handler(event_times: List[int], event_name: str = 'Chess Endgame event'):
-    timeslot = {1: '4:00 PM', 2: '4:30 PM', 0: '5:00 PM'}
+    timeslot = {1: '16:00', 2: '16:30', 0: '17:00'}
     day, slot = event_times
-    event_date = add_days_to_today(day-1)
+    event_date = datetime.today() + timedelta(days=(day - 1))
     event_time = timeslot[slot]
-    print(f'Date: {event_date}',end=' ')
-    print(f'Time: {event_time}')
     # Logic for creating event
+    # Combine date and time for start and end
+    start_datetime = datetime.strptime(f"{event_date.date()} {event_time}", "%Y-%m-%d %H:%M")
+    end_datetime = start_datetime + timedelta(minutes=25)
+
+    event = {
+        'summary': event_name,
+        'start': {
+            'dateTime': start_datetime.isoformat(),
+            'timeZone': 'Africa/Johannesburg',
+        },
+        'end': {
+            'dateTime': end_datetime.isoformat(),
+            'timeZone': 'Africa/Johannesburg',
+        }
+    }
+
+    service = get_calendar_service()
+    created_event = service.events().insert(calendarId='primary', body=event).execute()
+    print(f"✅ Created event: {created_event.get('summary')} at {start_datetime.strftime('%Y-%m-%d %H:%M')}")
 
 def add_days_to_today(days: int) -> str:
     future_date = datetime.today() + timedelta(days=days)
@@ -42,7 +79,6 @@ def add_days_to_today(days: int) -> str:
 def main():
     for lesson_number,name in enumerate(lessons):
         day_and_slot = get_lesson_day_and_slot(lesson_number+1)
-        print(name, end=' ')
-        event_handler(day_and_slot)
+        event_handler(day_and_slot,name)
 
 main()
