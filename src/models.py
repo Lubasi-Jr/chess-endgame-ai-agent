@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Hashable
 from pydantic import BaseModel
 
 
@@ -20,6 +20,6 @@ class EndgameState(BaseModel):
     piece_rules: str
     book_text_content: str
     book_pages: List[Any]
-    #Lessons: Any
+    lessons: Dict[str, List[str]]
 
 
