@@ -125,7 +125,7 @@ class Prompts:
             The actual pages of this book have been uploaded as images as part of this prompt so do have a look in order to gain a complete understanding
 
             Required Output Format:
-            - List of ChessLesson objects (3-5 complete lessons. The number of lessons depend on how many lessons are described in the book). Keep note that the ChessLesson class is as follows:
+            - List of ChessLesson objects (The number of lessons depend on how many lessons are described in the book). Keep note that the ChessLesson class is as follows:
 
             class ChessLesson(BaseModel):
             #Structured output for LLM company analysis focused on developer tools
