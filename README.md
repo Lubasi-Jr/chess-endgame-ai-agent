@@ -49,7 +49,7 @@ Built using python with key libraries being **Langgraph**, **Langchain** and **F
 Run the agent with <br>
 
 ```bash
-   uv run main.py
+   uv run main.py --topic '[Your endgame topic]'
 ```
 
 ## What happens?
