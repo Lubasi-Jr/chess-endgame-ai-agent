@@ -28,13 +28,13 @@ class Workflow:
         graph.add_node('rules', self._generate_rules_step)
         graph.add_node('lesson',self._lesson_generation_step)
         graph.add_node('pdf',self._pdf_generation_step)
-        graph.add_node('calender', self._calender_events_step)
+        #graph.add_node('calender', self._calender_events_step)
         graph.set_entry_point('read')
         graph.add_edge('read','rules')
         graph.add_edge('rules','lesson')
         graph.add_edge('lesson','pdf')
-        graph.add_edge('pdf','calender')
-        graph.add_edge('calender',END)
+        #graph.add_edge('pdf','calender')
+        graph.add_edge('pdf',END)
         return graph.compile()
     
     # Step 1
@@ -131,9 +131,9 @@ class Workflow:
             #filename += '.txt' 
             
             # Reason we are using "Lesson{i} is to avoid path errors when generating the pdf files. The filename above causes problems especially with the '_' symbols"
-            save_text_as_pdf(lesson_text,f"lesson{str(i+1)}.pdf")
-            
-    # Step 5
+            path = save_text_as_pdf(lesson_text,f"lesson{str(i+1)}.pdf")
+            state.file_paths.append(path)
+    # Step 5- REMOVED!!
     def _calender_events_step(self, state: EndgameState):
         lesson_titles = state.lessons['title']
         print()

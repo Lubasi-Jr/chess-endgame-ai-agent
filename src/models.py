@@ -20,5 +20,6 @@ class EndgameState(BaseModel):
     book_text_content: Optional[str] = None
     book_pages: Optional[List[Any]] = None
     lessons: Optional[Dict[str, List[str]]] = None
+    file_paths: Optional[List[str]] = []
 
 

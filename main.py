@@ -14,6 +14,7 @@ def main():
         result = workflow.run(topic)
         if result.book_text_content:
             print('All the best with your learning!!')
+            
 
     else:
         topic = input('What Endgame do you want to study?: ').strip()
@@ -23,6 +24,7 @@ def main():
             result = workflow.run(topic)
             if result.book_text_content:
                 print('All the best with your learning!!')
+                
 
 
 if __name__ == "__main__":

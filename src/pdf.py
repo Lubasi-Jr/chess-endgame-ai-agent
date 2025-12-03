@@ -42,5 +42,7 @@ def save_text_as_pdf(content: str, filename: str):
 
     if os.path.exists(output_path):
         print(f"💾 PDF saved as {filename}")
+        # Perhaps return the output path and append it to the state array
+        return output_path
     else:
         print("File has not been saved")
