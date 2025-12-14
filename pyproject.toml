@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "fastapi>=0.124.4",
     "firecrawl-py>=2.15.0",
     "fpdf>=1.7.2",
     "google-api-python-client>=2.176.0",
@@ -16,5 +17,7 @@ dependencies = [
     "pydantic>=2.11.7",
     "pymupdf>=1.26.3",
     "python-dotenv>=1.1.1",
+    "python-multipart>=0.0.20",
     "reportlab>=4.4.2",
+    "uvicorn>=0.38.0",
 ]
