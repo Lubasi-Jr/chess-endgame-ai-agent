@@ -1,8 +1,7 @@
 import os
 import io
 import zipfile
-import tempfile
-import shutil
+import glob
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,11 +20,14 @@ app = FastAPI(
 # CORS middleware for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Update with your frontend URL in production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Lessons folder path
+LESSONS_FOLDER = "lessons"
 
 
 class LessonRequest(BaseModel):
@@ -53,6 +55,14 @@ async def generate_lessons(request: LessonRequest):
         raise HTTPException(status_code=400, detail="Query cannot be empty")
 
     try:
+        # Ensure lessons folder exists
+        os.makedirs(LESSONS_FOLDER, exist_ok=True)
+        
+        # Clear any existing PDFs in the lessons folder before generating new ones
+        existing_pdfs = glob.glob(os.path.join(LESSONS_FOLDER, "*.pdf"))
+        for pdf in existing_pdfs:
+            os.remove(pdf)
+
         # Initialize and run the workflow
         workflow = Workflow()
         result = workflow.run(request.query.strip())
@@ -64,24 +74,34 @@ async def generate_lessons(request: LessonRequest):
                 detail="Failed to generate lessons. Please try again."
             )
 
-        # Check if file paths exist
-        if not result.file_paths or len(result.file_paths) == 0:
+        # Get all PDF files from the lessons folder
+        pdf_files = glob.glob(os.path.join(LESSONS_FOLDER, "*.pdf"))
+        
+        if not pdf_files:
             raise HTTPException(
                 status_code=500,
                 detail="No lesson files were generated."
             )
 
+        print(f"Found {len(pdf_files)} PDF files in lessons folder")
+
         # Create a zip file in memory
         zip_buffer = io.BytesIO()
         with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
-            for file_path in result.file_paths:
-                if os.path.exists(file_path):
-                    # Get just the filename for the archive
-                    filename = os.path.basename(file_path)
-                    zip_file.write(file_path, filename)
+            for file_path in pdf_files:
+                filename = os.path.basename(file_path)
+                zip_file.write(file_path, filename)
+                print(f"Added to zip: {filename}")
 
         # Reset buffer position
         zip_buffer.seek(0)
+
+        # Clean up generated PDF files
+        for file_path in pdf_files:
+            try:
+                os.remove(file_path)
+            except OSError:
+                pass
 
         # Create safe filename from query
         safe_query = "".join(c if c.isalnum() or c in " -_" else "" for c in request.query)
@@ -100,6 +120,8 @@ async def generate_lessons(request: LessonRequest):
     except HTTPException:
         raise
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
             status_code=500,
             detail=f"An error occurred while generating lessons: {str(e)}"
