@@ -1,263 +1,173 @@
-# ♟️ Chess Endgame AI Agent
+# Chess Endgame AI Agent
 
-An intelligent chess endgame tutor powered by AI that generates personalized lessons from the acclaimed book _"100 Endgames You Must Know"_ by Jesús de la Villa. This agent combines book knowledge with web-scraped principles to create comprehensive PDF lessons tailored to your chosen endgame topic.
+An AI agent that generates personalised chess endgame lessons on demand. Give it a topic like "King and Pawn vs King" or "Rook Endgames" and it locates the relevant pages in a reference book, researches supplementary principles on the web, synthesises them, and produces a pack of downloadable PDF lessons complete with FEN positions, strategic goals, and annotated move sequences.
 
-## About
+This repository is the **backend**: a FastAPI service wrapping a LangGraph agent pipeline. A separate [React frontend](https://github.com/Lubasi-Jr/chess-endgame-ai-agent-frontend) provides a web UI on top of it. The backend can also be run as a standalone CLI tool.
 
-The Chess Endgame AI Agent is a LangGraph-powered workflow that helps chess players master critical endgame positions. When you provide an endgame topic (such as "King and Pawn vs King" or "Rook Endgames"), the agent:
+> **Status:** personal project. It runs end to end, but it is not production-hardened. See [Limitations](#limitations) for an honest account of what is and isn't handled.
 
-1. **Locates relevant pages** from the "100 Endgames You Must Know" book using AI-powered table of contents analysis
-2. **Extracts content** from the identified book sections
-3. **Searches the web** using Firecrawl to gather additional endgame principles and strategies
-4. **Generates structured rules** by synthesizing book content with web-sourced knowledge
-5. **Creates PDF lessons** complete with FEN positions, strategic goals, move sequences and links to the underlying principles
+## How it works
 
-The result is a collection of downloadable PDF lessons saved to your `lessons` folder, ready for study.
+The core is a four-stage [LangGraph](https://langchain-ai.github.io/langgraph/) `StateGraph`, where each node is a pure function over a typed Pydantic state object:
 
-## Installation
+1. **`read`** — An LLM (`gpt-4o-mini`) reads the reference book's table of contents alongside your free-text topic and returns the exact page range to extract, plus a web search query. The identified pages are then pulled from the bundled book PDF using PyMuPDF, extracting both the page text and a rendered image of each page.
+2. **`rules`** — [Firecrawl](https://www.firecrawl.dev/) searches the web for the generated query, scrapes the top results, and the LLM synthesises the content into a concise list of endgame principles.
+3. **`lesson`** — The topic, synthesised principles, extracted book text, and the book page images are combined into a single multimodal prompt. The LLM returns several complete, structured lessons in one call, validated against a Pydantic schema.
+4. **`pdf`** — Each lesson is rendered to a PDF. The backend zips them and streams the archive back to the caller.
+
+Two design choices worth calling out:
+
+- **Multimodal grounding.** Rather than feeding the model only extracted text, the located book pages are rasterised to images and sent alongside the text, so the model can reason over the book's actual diagrams and positions.
+- **LLM-as-router.** Instead of hand-written table-of-contents matching, the model reads the ToC and decides which pages are relevant, letting semantic matching replace a brittle keyword algorithm.
+
+## Tech stack
+
+| Area | Tooling |
+| --- | --- |
+| Language / runtime | Python 3.10+ |
+| Package management | [uv](https://docs.astral.sh/uv/) (with committed lockfile) |
+| Web framework | FastAPI, served via Uvicorn |
+| Agent orchestration | LangGraph, LangChain |
+| LLM | OpenAI `gpt-4o-mini` (via `langchain-openai`) |
+| Web search / scraping | Firecrawl |
+| Book PDF parsing | PyMuPDF (`fitz`) |
+| PDF generation | `fpdf` |
+| Data validation | Pydantic v2 |
+| Containerisation | Docker |
+
+## Getting started
 
 ### Prerequisites
 
-Before installing the Chess Endgame AI Agent, ensure you have the following installed on your system:
+| Requirement | Version | Link |
+| --- | --- | --- |
+| Python | 3.10+ | [python.org/downloads](https://www.python.org/downloads/) |
+| uv | Latest | [docs.astral.sh/uv](https://docs.astral.sh/uv/getting-started/installation/) |
+| Git | Latest | [git-scm.com/downloads](https://git-scm.com/downloads) |
 
-| Requirement                 | Version | Download Link                                                                |
-| --------------------------- | ------- | ---------------------------------------------------------------------------- |
-| Python                      | 3.10+   | [python.org/downloads](https://www.python.org/downloads/)                    |
-| uv (Python package manager) | Latest  | [docs.astral.sh/uv](https://docs.astral.sh/uv/getting-started/installation/) |
-| Git                         | Latest  | [git-scm.com/downloads](https://git-scm.com/downloads)                       |
-
-### Step 1: Clone the Repository
-
-Open your terminal and run the following commands:
+### 1. Clone and install
 
 ```bash
 git clone https://github.com/Lubasi-Jr/chess-endgame-ai-agent.git
-```
-
-Navigate into the project directory:
-
-```bash
 cd chess-endgame-ai-agent
-```
-
-### Step 2: Open in Your Code Editor
-
-Open the project in Visual Studio Code (or your preferred editor):
-
-```bash
-code .
-```
-
-### Step 3: Install Dependencies
-
-With `uv` installed, run the following command to install all required packages:
-
-```bash
 uv sync
 ```
 
-This will read the `pyproject.toml` file and install all dependencies into a virtual environment.
+`uv sync` reads `pyproject.toml` and installs all dependencies into a virtual environment.
 
-### Step 4: Configure Environment Variables
+### 2. Configure environment variables
 
-Create a `.env.local` file in the root of the project:
-
-```bash
-touch .env.local
-```
-
-Open the file and add the following environment variables:
+Create a `.env` file in the project root:
 
 ```env
 OPENAI_API_KEY=your_openai_api_key_here
 FIRECRAWL_API_KEY=your_firecrawl_api_key_here
 ```
 
-#### Getting Your API Keys
+- **OpenAI key:** [platform.openai.com](https://platform.openai.com/) → API Keys → Create new secret key.
+- **Firecrawl key:** [firecrawl.dev](https://www.firecrawl.dev/) → sign up → copy your key from the dashboard.
 
-**OpenAI API Key:**
+Both keys are required. The service reads them at startup and calls out to OpenAI and Firecrawl on every request, so generating lessons consumes credits on both.
 
-1. Visit [platform.openai.com](https://platform.openai.com/)
-2. Sign up or log in to your account
-3. Navigate to **API Keys** in the left sidebar
-4. Click **Create new secret key**
-5. Copy the key and paste it into your `.env.local` file
+## Running the backend
 
-**Firecrawl API Key:**
-
-1. Visit [firecrawl.dev](https://www.firecrawl.dev/)
-2. Sign up for an account
-3. Navigate to your dashboard
-4. Copy your API key and paste it into your `.env.local` file
-
-### Step 5: Run the Application
-
-Start the Chess Endgame AI Agent by running:
+### As an HTTP API (used by the frontend)
 
 ```bash
-uv run python main.py
+uv run uvicorn app:app --host 0.0.0.0 --port 8000
 ```
 
-You can also pass a topic directly as a command-line argument:
+The API is then available at `http://localhost:8000`.
+
+### As a CLI tool (no server)
 
 ```bash
 uv run python main.py --topic "King and Pawn vs King"
 ```
 
-## Usage
-
-Once the application starts, you will see:
-
-```
-CHESS ENDGAME TEACHER AGENT
-What Endgame do you want to study?:
-```
-
-Enter your desired endgame topic (for example):
-
-- `King and Pawn vs King`
-- `Rook and Pawn Endgames`
-- `Queen vs Rook`
-- `Bishop Endgames`
-- `Lucena Position`
-
-The agent will then:
-
-1. Search the book's table of contents for relevant pages
-2. Extract the book content
-3. Search the web for additional principles
-4. Generate structured lessons
-5. Save PDF files to the `lessons` folder
-
-When complete, you will see:
-
-```
-💾 PDF saved as lesson1.pdf
-💾 PDF saved as lesson2.pdf
-All the best with your learning!!
-```
-
-Navigate to the `lessons` folder to find your generated PDF lessons.
-
-## Troubleshooting
-
-### Common Issues and Solutions
-
-**"ModuleNotFoundError: No module named 'xxx'"**
-
-Ensure you have installed all dependencies:
+Or run it interactively and enter a topic when prompted:
 
 ```bash
-uv sync
+uv run python main.py
 ```
 
-**"OPENAI_API_KEY not found" or "FIRECRAWL_API_KEY not found"**
+Generated PDFs are written to the `lessons/` folder.
 
-Make sure your `.env.local` file exists in the project root and contains valid API keys. Also ensure `load_dotenv()` is loading the correct file. You may need to rename it to `.env`:
+### With Docker
 
 ```bash
-mv .env.local .env
+docker build -t chess-endgame-agent .
+docker run -p 8000:8000 --env-file .env chess-endgame-agent
 ```
 
-**"Rate limit exceeded" errors**
+## API reference
 
-You may have exceeded your API quota. Check your usage at:
+### `GET /health`
 
-- OpenAI: [platform.openai.com/usage](https://platform.openai.com/usage)
-- Firecrawl: Your Firecrawl dashboard
+Liveness check. Returns:
 
-Consider waiting a few minutes before retrying.
-
-**PDF files not appearing in the lessons folder**
-
-Ensure the `lessons` folder exists. If not, create it:
-
-```bash
-mkdir lessons
+```json
+{ "status": "ok", "message": "Chess Endgame AI Agent is running" }
 ```
 
-**"No book content found" or empty lessons**
+### `POST /lessons`
 
-The topic you entered may not match content in the book's table of contents. Try using more specific chess terminology such as:
+Generates lessons for a topic and returns them as a ZIP archive of PDFs.
 
-- "Pawn Endgames"
-- "Rook Endgames"
-- "Minor Piece Endgames"
+**Request body:**
 
-**Windows-specific path issues**
+```json
+{ "query": "Rook Endgames" }
+```
 
-If you encounter path-related errors on Windows, ensure you are using forward slashes or raw strings in any custom path configurations.
+**Response:** a binary `application/zip` stream (`Content-Disposition: attachment`) containing one PDF per generated lesson. The request runs the full agent pipeline synchronously, so it blocks until every lesson is generated; expect it to take a little time while the LLM and web-scraping calls complete.
 
-### Still Having Issues?
+**Errors:** `400` for an empty query, `422` for a malformed body, `500` for a generation failure.
 
-1. Check that your Python version is 3.10 or higher: `python --version`
-2. Ensure `uv` is properly installed: `uv --version`
-3. Try deleting the `.venv` folder and reinstalling: `rm -rf .venv && uv sync`
-4. Open an issue on the [GitHub repository](https://github.com/Lubasi-Jr/chess-endgame-ai-agent/issues)
+## Connecting the frontend
+
+The [frontend](https://github.com/Lubasi-Jr/chess-endgame-ai-agent-frontend) reads its backend URL from a `VITE_API_URL` environment variable at build time. Point it at wherever this backend is running (for local development, `http://localhost:8000`). CORS is currently open to all origins to keep local development simple.
+
+## Project structure
+
+```
+app.py              FastAPI app and HTTP entrypoint
+main.py             CLI entrypoint (drives the same workflow without HTTP)
+src/
+  workflow.py       LangGraph pipeline definition and orchestration
+  models.py         Pydantic schemas (graph state, lesson output schema)
+  book.py           Book PDF / table-of-contents extraction (PyMuPDF)
+  firecrawl.py      Firecrawl web search + scraping wrapper
+  prompts.py        Prompt templates
+  pdf.py            Lesson-to-PDF rendering (fpdf)
+  calender.py       Google Calendar scheduling (built, currently disabled)
+resources/          Bundled reference book and extracted table of contents
+```
+
+## Limitations
+
+This is a personal project and is deliberately honest about its rough edges:
+
+- **Synchronous requests.** `POST /lessons` runs the whole pipeline inline and can take a while; there is no background job queue or progress streaming.
+- **No request isolation.** Generated PDFs are written to a single shared `lessons/` folder, so concurrent requests can interfere with each other. Fine for single-user local use, not for concurrent load.
+- **Minimal hardening.** No authentication, no rate limiting, open CORS, and no retry-with-backoff on the LLM or scraping calls (each gets one attempt with a graceful fallback).
+- **No automated tests or CI** yet.
+- **Calendar scheduling is disabled.** The Google Calendar node is fully written but commented out of the active graph.
+
+## Roadmap
+
+Natural next steps, several of which double as good contributions:
+
+- Offload generation to a background task queue with a job-status endpoint the frontend can poll.
+- Give each request an isolated working directory to remove the concurrency race.
+- Add schema-level validation on the multi-lesson output and a retry-with-correction loop.
+- Support alternative LLM providers (Anthropic Claude, Google Gemini) and additional reference books.
+- Add a JSON lesson endpoint so the frontend can render lessons in-page instead of only offering a download.
+- Add unit tests for the workflow nodes and a CI pipeline.
 
 ## Contributing
 
-Contributions are welcome! Whether it's bug fixes, new features or documentation improvements, your input helps make this project better.
-
-### How to Contribute
-
-1. **Fork the repository**
-
-   Click the "Fork" button at the top right of the [repository page](https://github.com/Lubasi-Jr/chess-endgame-ai-agent).
-
-2. **Clone your fork**
-
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/chess-endgame-ai-agent.git
-   cd chess-endgame-ai-agent
-   ```
-
-3. **Create a feature branch**
-
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-
-4. **Make your changes**
-
-   Implement your feature or bug fix. Ensure your code follows the existing style and includes appropriate comments.
-
-5. **Test your changes**
-
-   Run the application to verify everything works:
-
-   ```bash
-   uv run python main.py --topic "King and Pawn vs King"
-   ```
-
-6. **Commit your changes**
-
-   Write clear, descriptive commit messages:
-
-   ```bash
-   git add .
-   git commit -m "Add: brief description of your changes"
-   ```
-
-7. **Push to your fork**
-
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-
-8. **Open a Pull Request**
-
-   Go to the original repository and click "New Pull Request". Select your fork and branch, then provide a clear description of your changes.
-
-### Contribution Ideas
-
-- Add support for additional chess books
-- Implement alternative LLM providers (Anthropic Claude, Google Gemini)
-- Create a web interface for the agent
-- Add spaced repetition scheduling for lessons
-- Improve PDF formatting and styling
-- Add support for PGN file generation
-- Write unit tests for the workflow components
+Contributions are welcome, bug fixes, features, or documentation. Fork the repo, create a feature branch, make your changes, and open a pull request with a clear description.
 
 ---
 
